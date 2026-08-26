@@ -120,17 +120,41 @@
       navigator.serviceWorker.register('sw.js').catch(() => {});
     }
 
-    async function loadData() {
-      try {
-        const response = await fetch('data.json');
-        const rawData = await response.json();
-        
-        items = rawData.map(item => {
-          if (typeEnglishToJapanese[item.type]) {
-            item.type = typeEnglishToJapanese[item.type];
-          }
-          return item;
-        });
+async function loadData() {
+  try {
+    const response = await fetch('data.json');
+    const rawData = await response.json();
+    
+    items = rawData.map(item => {
+      // 英語表記の変換
+      if (typeEnglishToJapanese[item.type]) {
+        item.type = typeEnglishToJapanese[item.type];
+      }
+
+      // 中カテゴリが type に入っている場合、大カテゴリ("魔法"等)と中カテゴリ("真語魔法"等)に自動分離
+      for (const [mainCat, subCats] of Object.entries(subCategoryMap)) {
+        if (subCats.includes(item.type)) {
+          item.category = item.type;
+          item.type = mainCat;
+          break;
+        }
+      }
+
+      // overview（概要）を summary に補正
+      if (item.overview && !item.summary) {
+        item.summary = item.overview;
+      }
+
+      return item;
+    });
+
+    onMainCategoryChange();
+    handleSearch();
+  } catch (e) {
+    document.getElementById('card-container').innerHTML = 
+      `<div class="col-span-full text-center py-8 text-rose-500">データの読み込みに失敗しました。</div>`;
+  }
+}
 
         onMainCategoryChange();
         handleSearch();
