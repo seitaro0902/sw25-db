@@ -160,7 +160,23 @@
       html += '</span>';
       return html;
     }
+    
+// 楽素テキスト置換関数（数字や複数表記にも対応）
+function renderGakusoIcon(val) {
+  if (!val || val === '-') return '-';
+  let text = String(val);
 
+  // 上昇
+  text = text.replace(/(上昇|⤴︎?|↗)/g, `<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold text-[11px] mr-0.5"><span class="text-emerald-600 font-extrabold leading-none text-xs">⤴︎</span>上昇</span>`);
+
+  // 下降
+  text = text.replace(/(下降|⤵︎?|↘)/g, `<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-rose-100 text-rose-800 border border-rose-300 font-bold text-[11px] mr-0.5"><span class="text-rose-600 font-extrabold leading-none text-xs">⤵︎</span>下降</span>`);
+
+  // 魅力
+  text = text.replace(/(魅力|♡|♥)/g, `<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-pink-100 text-pink-800 border border-pink-300 font-bold text-[11px] mr-0.5"><span class="text-pink-600 leading-none text-xs">♥</span>魅力</span>`);
+
+  return text;
+}
     // 各カテゴリごとのステータス表レンダラー
     function renderSpecTable(item) {
       const type = item.type;
@@ -208,9 +224,9 @@
           ${cell('発生条件', item.condition)}
           ${cell('抵抗', item.resist)}
           ${cell('属性', item.element)}
-          ${cell('基礎楽素', item.baseElement)}
+          ${cell('基礎楽素', renderGakusoIcon(item.baseElement))}
           ${cell('巧奏値', item.craftVal)}
-          ${cell('追加楽素', item.addElement)}
+          ${cell('追加楽素', renderGakusoIcon(item.addElement))}
         </div>`;
       }
 
