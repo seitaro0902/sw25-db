@@ -165,13 +165,13 @@ function renderGakusoIcon(val) {
   if (!val || val === '-') return '-';
   let text = String(val);
   text = text.replace(/\[高揚\]/g, 
-    `<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold text-[11px] mr-0.5"><span class="text-emerald-600 font-extrabold leading-none text-xs">⤴︎</span>高揚</span>`
+    `<span class="inline-flex items-center justify-center px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-300 font-extrabold text-xs mr-0.5" title="高揚">⤴︎</span>`
   );
   text = text.replace(/\[鎮静\]/g, 
-    `<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-rose-100 text-rose-800 border border-rose-300 font-bold text-[11px] mr-0.5"><span class="text-rose-600 font-extrabold leading-none text-xs">⤵︎</span>鎮静</span>`
+    `<span class="inline-flex items-center justify-center px-1.5 py-0.5 rounded-full bg-sky-100 text-sky-700 border border-sky-300 font-extrabold text-xs mr-0.5" title="鎮静">⤵︎</span>`
   );
   text = text.replace(/\[魅惑\]/g, 
-    `<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-pink-100 text-pink-800 border border-pink-300 font-bold text-[11px] mr-0.5"><span class="text-pink-600 leading-none text-xs">♥</span>魅惑</span>`
+    `<span class="inline-flex items-center justify-center px-1.5 py-0.5 rounded-full bg-pink-100 text-pink-600 border border-pink-300 text-xs mr-0.5" title="魅惑">♥</span>`
   );
   return text;
 }
