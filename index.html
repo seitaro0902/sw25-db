@@ -23,18 +23,44 @@
   </header>
 
   <main class="max-w-4xl mx-auto p-4 space-y-4">
+    <!-- 検索・フィルターエリア -->
     <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 space-y-3">
-      <input type="text" id="search-input" oninput="handleSearch()" placeholder="名称、カテゴリ、効果で検索..." 
+      <input type="text" id="search-input" oninput="handleSearch()" placeholder="名称、効果などで検索..." 
              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500">
 
-      <div class="flex flex-wrap gap-2 text-sm">
-        <select id="type-filter" onchange="handleSearch()" class="px-3 py-2 border border-slate-300 rounded-lg bg-white">
-          <option value="all">すべての種別</option>
-          <option value="weapon">武器</option>
-          <option value="magic">魔法</option>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm">
+        <!-- 大カテゴリ -->
+        <select id="main-category" onchange="updateSubCategories(); handleSearch();" class="px-3 py-2 border border-slate-300 rounded-lg bg-white">
+          <option value="all">すべての大カテゴリ</option>
+          <option value="魔法">魔法</option>
+          <option value="練技">練技</option>
+          <option value="呪歌・終律">呪歌・終律</option>
+          <option value="騎芸">騎芸</option>
+          <option value="賦術">賦術</option>
+          <option value="戦闘特技">戦闘特技</option>
+          <option value="武器">武器</option>
+          <option value="防具">防具</option>
+          <option value="アイテム">アイテム</option>
+          <option value="装飾品">装飾品</option>
+          <option value="騎獣">騎獣</option>
         </select>
 
-        <select id="sort-select" onchange="handleSearch()" class="px-3 py-2 border border-slate-300 rounded-lg bg-white ml-auto">
+        <!-- 中カテゴリ -->
+        <select id="sub-category" onchange="handleSearch()" class="px-3 py-2 border border-slate-300 rounded-lg bg-white">
+          <option value="all">すべての中カテゴリ</option>
+        </select>
+
+        <!-- ランク（武器・防具用） -->
+        <select id="rank-filter" onchange="handleSearch()" class="px-3 py-2 border border-slate-300 rounded-lg bg-white">
+          <option value="all">すべてのランク</option>
+          <option value="B">Bランク</option>
+          <option value="A">Aランク</option>
+          <option value="S">Sランク</option>
+          <option value="SS">SSランク</option>
+        </select>
+
+        <!-- ソート -->
+        <select id="sort-select" onchange="handleSearch()" class="px-3 py-2 border border-slate-300 rounded-lg bg-white">
           <option value="name">五十音順</option>
           <option value="reqStr">必筋が低い順</option>
           <option value="power">威力が高い順</option>
@@ -48,24 +74,54 @@
   </main>
 
   <script>
+    // 定義データ: 中カテゴリマップ
+    const subCategoryMap = {
+      "魔法": ["真語魔法", "操霊魔法", "神聖魔法", "魔動機術", "妖精魔法"],
+      "練技": ["1レベル", "5レベル", "10レベル"],
+      "呪歌・終律": ["呪歌", "終律"],
+      "騎芸": ["1レベル", "5レベル", "10レベル"],
+      "賦術": ["1レベル", "5レベル", "10レベル"],
+      "戦闘特技": ["選択・常時", "選択・宣言", "選択・主動作", "自動・常時"],
+      "武器": ["ソード", "アックス", "スピア", "メイス", "スタッフ", "フレイル", "ウォーハンマー", "格闘", "投擲", "ボウ", "クロスボウ", "ガン", "矢弾"],
+      "防具": ["非金属鎧", "金属鎧", "盾"],
+      "アイテム": ["冒険者技能用アイテム", "冒険者道具類"],
+      "装飾品": ["頭", "顔", "耳", "首", "背中", "手", "腰", "足", "任意"],
+      "騎獣": []
+    };
+
     let items = [];
     let bookmarks = JSON.parse(localStorage.getItem('sw25_bookmarks') || '[]');
     let activeTab = 'all';
 
-    // Service Worker の登録
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js').catch(() => {});
     }
 
-    // 外部JSONデータの取得
     async function loadData() {
       try {
         const response = await fetch('data.json');
         items = await response.json();
+        updateSubCategories();
         handleSearch();
       } catch (e) {
         document.getElementById('card-container').innerHTML = 
           `<div class="col-span-full text-center py-8 text-rose-500">データの読み込みに失敗しました。</div>`;
+      }
+    }
+
+    // 大カテゴリ選択に合わせて中カテゴリのドロップダウンを動的変更
+    function updateSubCategories() {
+      const mainCat = document.getElementById('main-category').value;
+      const subSelect = document.getElementById('sub-category');
+      subSelect.innerHTML = '<option value="all">すべての中カテゴリ</option>';
+
+      if (mainCat !== 'all' && subCategoryMap[mainCat]) {
+        subCategoryMap[mainCat].forEach(sub => {
+          const opt = document.createElement('option');
+          opt.value = sub;
+          opt.textContent = sub;
+          subSelect.appendChild(opt);
+        });
       }
     }
 
@@ -88,13 +144,18 @@
 
     function handleSearch() {
       const keyword = document.getElementById('search-input').value.toLowerCase();
-      const selectedType = document.getElementById('type-filter').value;
+      const mainCat = document.getElementById('main-category').value;
+      const subCat = document.getElementById('sub-category').value;
+      const rank = document.getElementById('rank-filter').value;
       const sortKey = document.getElementById('sort-select').value;
 
       let filtered = items.filter(item => {
         if (activeTab === 'fav' && !bookmarks.includes(item.id)) return false;
-        if (selectedType !== 'all' && item.type !== selectedType) return false;
-        const matchText = (item.name + item.category + (item.effect || '')).toLowerCase();
+        if (mainCat !== 'all' && item.type !== mainCat) return false;
+        if (subCat !== 'all' && item.category !== subCat) return false;
+        if (rank !== 'all' && item.rank !== rank) return false;
+
+        const matchText = (item.name + (item.category || '') + (item.effect || '')).toLowerCase();
         return matchText.includes(keyword);
       });
 
@@ -128,26 +189,33 @@
           <div>
             <div class="flex justify-between items-start mb-2">
               <div>
-                <span class="inline-block text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600 mb-1 border">${item.category}</span>
+                <div class="flex gap-1 mb-1">
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-800 text-white">${item.type}</span>
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600 border">${item.category}</span>
+                  ${item.rank ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300">${item.rank}ランク</span>` : ''}
+                </div>
                 <h2 class="text-base font-bold text-slate-900">${item.name}</h2>
               </div>
               <button onclick="toggleBookmark('${item.id}')" class="text-xl leading-none p-1 focus:outline-none">
                 ${isFav ? '★' : '☆'}
               </button>
             </div>
-            ${item.type === 'weapon' ? `
+
+            ${item.type === '武器' ? `
               <div class="grid grid-cols-4 gap-1 bg-slate-50 p-2 rounded text-center text-xs mb-2 border border-slate-100">
-                <div><span class="text-slate-400 block text-[9px]">用法</span>${item.usage}</div>
-                <div><span class="text-slate-400 block text-[9px]">必筋</span>${item.reqStr}</div>
-                <div><span class="text-slate-400 block text-[9px]">威力</span>${item.power}</div>
-                <div><span class="text-slate-400 block text-[9px]">C値</span>${item.crit}</div>
+                <div><span class="text-slate-400 block text-[9px]">用法</span>${item.usage || '-'}</div>
+                <div><span class="text-slate-400 block text-[9px]">必筋</span>${item.reqStr ?? '-'}</div>
+                <div><span class="text-slate-400 block text-[9px]">威力</span>${item.power ?? '-'}</div>
+                <div><span class="text-slate-400 block text-[9px]">C値</span>${item.crit ?? '-'}</div>
               </div>
             ` : ''}
+
             <p class="text-xs text-slate-600 mb-3 leading-relaxed">${item.effect || ''}</p>
           </div>
+
           <div class="flex justify-between items-center text-[11px] text-slate-400 pt-2 border-t border-slate-100">
             <span>価格: <strong class="text-slate-700">${item.price ? item.price + ' G' : '-'}</strong></span>
-            <span>${item.book || ''} p.${item.page || '-'}</span>
+            <span>${item.book || ''} ${item.page ? 'p.' + item.page : ''}</span>
           </div>
         `;
         container.appendChild(card);
