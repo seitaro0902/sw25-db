@@ -25,12 +25,12 @@
   <main class="max-w-4xl mx-auto p-4 space-y-4">
     <!-- 検索・フィルターエリア -->
     <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 space-y-3">
-      <input type="text" id="search-input" oninput="handleSearch()" placeholder="名称、効果などで検索..." 
+      <input type="text" id="search-input" oninput="handleSearch()" placeholder="名称、効果、信仰神などで検索..." 
              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500">
 
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm">
         <!-- 大カテゴリ -->
-        <select id="main-category" onchange="updateSubCategories(); handleSearch();" class="px-3 py-2 border border-slate-300 rounded-lg bg-white">
+        <select id="main-category" onchange="onMainCategoryChange(); handleSearch();" class="px-3 py-2 border border-slate-300 rounded-lg bg-white">
           <option value="all">すべての大カテゴリ</option>
           <option value="魔法">魔法</option>
           <option value="練技">練技</option>
@@ -46,12 +46,17 @@
         </select>
 
         <!-- 中カテゴリ -->
-        <select id="sub-category" onchange="handleSearch()" class="px-3 py-2 border border-slate-300 rounded-lg bg-white">
+        <select id="sub-category" onchange="onSubCategoryChange(); handleSearch();" class="px-3 py-2 border border-slate-300 rounded-lg bg-white">
           <option value="all">すべての中カテゴリ</option>
         </select>
 
-        <!-- ランク -->
-        <select id="rank-filter" onchange="handleSearch()" class="px-3 py-2 border border-slate-300 rounded-lg bg-white">
+        <!-- レベルフィルター（動的表示） -->
+        <select id="level-filter" onchange="handleSearch()" class="hidden px-3 py-2 border border-slate-300 rounded-lg bg-white">
+          <option value="all">すべてのレベル</option>
+        </select>
+
+        <!-- ランクフィルター（動的表示） -->
+        <select id="rank-filter" onchange="handleSearch()" class="hidden px-3 py-2 border border-slate-300 rounded-lg bg-white">
           <option value="all">すべてのランク</option>
           <option value="B">Bランク</option>
           <option value="A">Aランク</option>
@@ -59,10 +64,17 @@
           <option value="SS">SSランク</option>
         </select>
 
+        <!-- 特殊分類（神聖魔法の神/妖精魔法の属性など・動的表示） -->
+        <select id="special-filter" onchange="handleSearch()" class="hidden px-3 py-2 border border-slate-300 rounded-lg bg-white col-span-2 sm:col-span-1">
+          <option value="all">すべての分類</option>
+        </select>
+
         <!-- ソート -->
         <select id="sort-select" onchange="handleSearch()" class="px-3 py-2 border border-slate-300 rounded-lg bg-white">
           <option value="categoryOrder">大カテゴリ順</option>
           <option value="name">五十音順</option>
+          <option value="level">レベル昇順</option>
+          <option value="rank">ランク順 (B→SS)</option>
           <option value="reqStr">必筋が低い順</option>
           <option value="power">威力が高い順</option>
           <option value="price">価格が安い順</option>
@@ -75,34 +87,40 @@
   </main>
 
   <script>
-    // 指定された大カテゴリの優先順位
+    // 大カテゴリ優先順
     const mainCategoryOrder = [
       "魔法", "練技", "呪歌・終律", "騎芸", "賦術", "戦闘特技", 
       "武器", "防具", "アイテム", "装飾品", "騎獣"
     ];
 
-    // 英語表記から日本語への変換マップ
+    // 英語表記補正用
     const typeEnglishToJapanese = {
-      "weapon": "武器",
-      "magic": "魔法",
-      "armor": "防具",
-      "item": "アイテム",
-      "accessory": "装飾品"
+      "weapon": "武器", "magic": "魔法", "armor": "防具", "item": "アイテム", "accessory": "装飾品"
     };
 
     // 中カテゴリマップ
     const subCategoryMap = {
       "魔法": ["真語魔法", "操霊魔法", "神聖魔法", "魔動機術", "妖精魔法"],
-      "練技": ["1レベル", "5レベル", "10レベル"],
+      "練技": [],
       "呪歌・終律": ["呪歌", "終律"],
-      "騎芸": ["1レベル", "5レベル", "10レベル"],
-      "賦術": ["1レベル", "5レベル", "10レベル"],
+      "騎芸": [],
+      "賦術": [],
       "戦闘特技": ["選択・常時", "選択・宣言", "選択・主動作", "自動・常時"],
       "武器": ["ソード", "アックス", "スピア", "メイス", "スタッフ", "フレイル", "ウォーハンマー", "格闘", "投擲", "ボウ", "クロスボウ", "ガン", "矢弾"],
       "防具": ["非金属鎧", "金属鎧", "盾"],
       "アイテム": ["冒険者技能用アイテム", "冒険者道具類"],
       "装飾品": ["頭", "顔", "耳", "首", "背中", "手", "腰", "足", "任意"],
       "騎獣": []
+    };
+
+    // 特殊分類マップ（神聖魔法・妖精魔法）
+    const specialCategoryMap = {
+      "神聖魔法": [
+        "基本神聖魔法", "始祖神ライフォス", "太陽神ティダン", "賢神キルヒア", "妖精神アステリア", 
+        "炎武帝グレンダール", "月神シーン", "神の指先ミルタバル", "奈落の盾神イーヴ", 
+        "導きの星神ハルーラ", "樹神ダリオン", "慈愛と復讐の女神ミリッツァ", "風と雨の女神フルシル", "鉄道神王ストラスフォード"
+      ],
+      "妖精魔法": ["基本妖精魔法", "土", "水・氷", "炎", "風", "光", "闇"]
     };
 
     let items = [];
@@ -118,7 +136,6 @@
         const response = await fetch('data.json');
         const rawData = await response.json();
         
-        // データの表記揺れ（英語→日本語）を自動補正
         items = rawData.map(item => {
           if (typeEnglishToJapanese[item.type]) {
             item.type = typeEnglishToJapanese[item.type];
@@ -126,7 +143,7 @@
           return item;
         });
 
-        updateSubCategories();
+        onMainCategoryChange();
         handleSearch();
       } catch (e) {
         document.getElementById('card-container').innerHTML = 
@@ -134,11 +151,15 @@
       }
     }
 
-    function updateSubCategories() {
+    // 大カテゴリ変更時：中カテゴリ＆レベル／ランクフィルターの表示切替
+    function onMainCategoryChange() {
       const mainCat = document.getElementById('main-category').value;
       const subSelect = document.getElementById('sub-category');
-      subSelect.innerHTML = '<option value="all">すべての中カテゴリ</option>';
+      const levelSelect = document.getElementById('level-filter');
+      const rankSelect = document.getElementById('rank-filter');
 
+      // 1. 中カテゴリの更新
+      subSelect.innerHTML = '<option value="all">すべての中カテゴリ</option>';
       if (mainCat !== 'all' && subCategoryMap[mainCat]) {
         subCategoryMap[mainCat].forEach(sub => {
           const opt = document.createElement('option');
@@ -146,6 +167,65 @@
           opt.textContent = sub;
           subSelect.appendChild(opt);
         });
+      }
+
+      // 2. レベル／ランク表示切り替え
+      const levelCategories = ["魔法", "練技", "呪歌・終律", "騎芸", "賦術"];
+      const rankCategories = ["武器", "防具"];
+
+      if (levelCategories.includes(mainCat)) {
+        levelSelect.classList.remove('hidden');
+        rankSelect.classList.add('hidden');
+        rankSelect.value = 'all';
+
+        // レベル選択肢の生成
+        levelSelect.innerHTML = '<option value="all">すべてのレベル</option>';
+        if (mainCat === "魔法") {
+          for (let i = 1; i <= 15; i++) {
+            const opt = document.createElement('option');
+            opt.value = i;
+            opt.textContent = `${i}レベル`;
+            levelSelect.appendChild(opt);
+          }
+        } else {
+          [1, 5, 10].forEach(lvl => {
+            const opt = document.createElement('option');
+            opt.value = lvl;
+            opt.textContent = `${lvl}レベル`;
+            levelSelect.appendChild(opt);
+          });
+        }
+      } else if (rankCategories.includes(mainCat)) {
+        rankSelect.classList.remove('hidden');
+        levelSelect.classList.add('hidden');
+        levelSelect.value = 'all';
+      } else {
+        levelSelect.classList.add('hidden');
+        rankSelect.classList.add('hidden');
+        levelSelect.value = 'all';
+        rankSelect.value = 'all';
+      }
+
+      onSubCategoryChange();
+    }
+
+    // 中カテゴリ変更時：特殊分類（神/属性）の表示切替
+    function onSubCategoryChange() {
+      const subCat = document.getElementById('sub-category').value;
+      const specialSelect = document.getElementById('special-filter');
+
+      if (specialCategoryMap[subCat]) {
+        specialSelect.classList.remove('hidden');
+        specialSelect.innerHTML = '<option value="all">すべての特殊分類</option>';
+        specialCategoryMap[subCat].forEach(sp => {
+          const opt = document.createElement('option');
+          opt.value = sp;
+          opt.textContent = sp;
+          specialSelect.appendChild(opt);
+        });
+      } else {
+        specialSelect.classList.add('hidden');
+        specialSelect.value = 'all';
       }
     }
 
@@ -170,29 +250,38 @@
       const keyword = document.getElementById('search-input').value.toLowerCase();
       const mainCat = document.getElementById('main-category').value;
       const subCat = document.getElementById('sub-category').value;
-      const rank = document.getElementById('rank-filter').value;
+      const selectedLevel = document.getElementById('level-filter').value;
+      const selectedRank = document.getElementById('rank-filter').value;
+      const selectedSpecial = document.getElementById('special-filter').value;
       const sortKey = document.getElementById('sort-select').value;
 
       let filtered = items.filter(item => {
         if (activeTab === 'fav' && !bookmarks.includes(item.id)) return false;
         if (mainCat !== 'all' && item.type !== mainCat) return false;
         if (subCat !== 'all' && item.category !== subCat) return false;
-        if (rank !== 'all' && item.rank !== rank) return false;
+        
+        // レベルフィルター
+        if (selectedLevel !== 'all' && String(item.level) !== String(selectedLevel)) return false;
+        // ランクフィルター
+        if (selectedRank !== 'all' && item.rank !== selectedRank) return false;
+        // 特殊分類フィルター
+        if (selectedSpecial !== 'all' && item.special !== selectedSpecial) return false;
 
-        const matchText = (item.name + (item.category || '') + (item.effect || '')).toLowerCase();
+        const matchText = (item.name + (item.category || '') + (item.special || '') + (item.effect || '')).toLowerCase();
         return matchText.includes(keyword);
       });
 
       // ソート処理
+      const rankOrder = { "B": 1, "A": 2, "S": 3, "SS": 4 };
       filtered.sort((a, b) => {
         if (sortKey === 'categoryOrder') {
           const indexA = mainCategoryOrder.indexOf(a.type);
           const indexB = mainCategoryOrder.indexOf(b.type);
-          const orderA = indexA === -1 ? 999 : indexA;
-          const orderB = indexB === -1 ? 999 : indexB;
-          return orderA - orderB;
+          return (indexA === -1 ? 999 : indexA) - (indexB === -1 ? 999 : indexB);
         }
         if (sortKey === 'name') return a.name.localeCompare(b.name, 'ja');
+        if (sortKey === 'level') return (a.level || 0) - (b.level || 0);
+        if (sortKey === 'rank') return (rankOrder[a.rank] || 0) - (rankOrder[b.rank] || 0);
         if (sortKey === 'reqStr') return (a.reqStr || 0) - (b.reqStr || 0);
         if (sortKey === 'power') return (b.power || 0) - (a.power || 0);
         if (sortKey === 'price') return (a.price || 0) - (b.price || 0);
@@ -221,10 +310,12 @@
           <div>
             <div class="flex justify-between items-start mb-2">
               <div>
-                <div class="flex gap-1 mb-1">
+                <div class="flex flex-wrap gap-1 mb-1">
                   <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-800 text-white">${item.type}</span>
-                  <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600 border">${item.category}</span>
+                  ${item.category ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600 border">${item.category}</span>` : ''}
+                  ${item.level ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-800 border border-blue-200">Lv.${item.level}</span>` : ''}
                   ${item.rank ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300">${item.rank}ランク</span>` : ''}
+                  ${item.special ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-200">${item.special}</span>` : ''}
                 </div>
                 <h2 class="text-base font-bold text-slate-900">${item.name}</h2>
               </div>
