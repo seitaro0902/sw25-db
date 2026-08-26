@@ -57,7 +57,7 @@
     "condition": "なし",
     "resist": "必中",
     "element": "精神効果",
-    "baseElement": "[高揚]1",
+    "baseElement": "[高揚]1[鎮静]2[魅惑]3",
     "craftVal": 13,
     "addElement": "[高揚]1",
     "summary": "味方の物理ダメージ上昇",
