@@ -164,22 +164,15 @@
 function renderGakusoIcon(val) {
   if (!val || val === '-') return '-';
   let text = String(val);
-
-  // [上昇] または [⤴]
-  text = text.replace(/\[(上昇|⤴︎?|↗)\]/g, 
-    `<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold text-[11px] mr-0.5"><span class="text-emerald-600 font-extrabold leading-none text-xs">⤴︎</span>上昇</span>`
+  text = text.replace(/\[高揚\]/g, 
+    `<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold text-[11px] mr-0.5"><span class="text-emerald-600 font-extrabold leading-none text-xs">⤴︎</span>高揚</span>`
   );
-
-  // [下降] または [⤵]
-  text = text.replace(/\[(下降|⤵︎?|↘)\]/g, 
-    `<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-rose-100 text-rose-800 border border-rose-300 font-bold text-[11px] mr-0.5"><span class="text-rose-600 font-extrabold leading-none text-xs">⤵︎</span>下降</span>`
+  text = text.replace(/\[鎮静\]/g, 
+    `<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-rose-100 text-rose-800 border border-rose-300 font-bold text-[11px] mr-0.5"><span class="text-rose-600 font-extrabold leading-none text-xs">⤵︎</span>鎮静</span>`
   );
-
-  // [魅力] または [♡]
-  text = text.replace(/\[(魅力|♡|♥)\]/g, 
-    `<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-pink-100 text-pink-800 border border-pink-300 font-bold text-[11px] mr-0.5"><span class="text-pink-600 leading-none text-xs">♥</span>魅力</span>`
+  text = text.replace(/\[魅惑\]/g, 
+    `<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-pink-100 text-pink-800 border border-pink-300 font-bold text-[11px] mr-0.5"><span class="text-pink-600 leading-none text-xs">♥</span>魅惑</span>`
   );
-
   return text;
 }
     
