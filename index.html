@@ -50,12 +50,12 @@
           <option value="all">すべての中カテゴリ</option>
         </select>
 
-        <!-- レベルフィルター（動的表示） -->
+        <!-- レベルフィルター -->
         <select id="level-filter" onchange="handleSearch()" class="hidden px-3 py-2 border border-slate-300 rounded-lg bg-white">
           <option value="all">すべてのレベル</option>
         </select>
 
-        <!-- ランクフィルター（動的表示） -->
+        <!-- ランクフィルター -->
         <select id="rank-filter" onchange="handleSearch()" class="hidden px-3 py-2 border border-slate-300 rounded-lg bg-white">
           <option value="all">すべてのランク</option>
           <option value="B">Bランク</option>
@@ -64,7 +64,7 @@
           <option value="SS">SSランク</option>
         </select>
 
-        <!-- 特殊分類（神聖魔法の神/妖精魔法の属性など・動的表示） -->
+        <!-- 特殊分類 -->
         <select id="special-filter" onchange="handleSearch()" class="hidden px-3 py-2 border border-slate-300 rounded-lg bg-white col-span-2 sm:col-span-1">
           <option value="all">すべての分類</option>
         </select>
@@ -87,18 +87,15 @@
   </main>
 
   <script>
-    // 大カテゴリ優先順
     const mainCategoryOrder = [
       "魔法", "練技", "呪歌・終律", "騎芸", "賦術", "戦闘特技", 
       "武器", "防具", "アイテム", "装飾品", "騎獣"
     ];
 
-    // 英語表記補正用
     const typeEnglishToJapanese = {
       "weapon": "武器", "magic": "魔法", "armor": "防具", "item": "アイテム", "accessory": "装飾品"
     };
 
-    // 中カテゴリマップ
     const subCategoryMap = {
       "魔法": ["真語魔法", "操霊魔法", "神聖魔法", "魔動機術", "妖精魔法"],
       "練技": [],
@@ -113,7 +110,6 @@
       "騎獣": []
     };
 
-    // 特殊分類マップ（神聖魔法・妖精魔法）
     const specialCategoryMap = {
       "神聖魔法": [
         "基本神聖魔法", "始祖神ライフォス", "太陽神ティダン", "賢神キルヒア", "妖精神アステリア", 
@@ -151,14 +147,34 @@
       }
     }
 
-    // 大カテゴリ変更時：中カテゴリ＆レベル／ランクフィルターの表示切替
+    // 発動タイミング用アイコン描画関数
+    function renderTimingIcons(timing) {
+      if (!timing) return '';
+      const list = Array.isArray(timing) ? timing : [timing];
+      let html = '<span class="inline-flex gap-0.5 items-center mr-1.5 leading-none">';
+
+      list.forEach(t => {
+        if (t === '補助動作' || t === '▶▶') {
+          html += `<span class="bg-slate-900 text-white px-1 py-0.5 rounded text-[11px] font-bold tracking-tighter" title="補助動作">▶▶</span>`;
+        } else if (t === '戦闘準備' || t === '△') {
+          html += `<span class="bg-slate-100 text-slate-800 border border-slate-400 px-1 py-0.5 rounded text-[11px] font-bold" title="戦闘準備">△</span>`;
+        } else if (t === '主動作' || t === '▶') {
+          html += `<span class="bg-slate-900 text-white px-1 py-0.5 rounded text-[11px] font-bold" title="主動作">▶</span>`;
+        } else {
+          html += `<span class="bg-slate-200 text-slate-700 px-1 py-0.5 rounded text-[10px] font-bold">${t}</span>`;
+        }
+      });
+
+      html += '</span>';
+      return html;
+    }
+
     function onMainCategoryChange() {
       const mainCat = document.getElementById('main-category').value;
       const subSelect = document.getElementById('sub-category');
       const levelSelect = document.getElementById('level-filter');
       const rankSelect = document.getElementById('rank-filter');
 
-      // 1. 中カテゴリの更新
       subSelect.innerHTML = '<option value="all">すべての中カテゴリ</option>';
       if (mainCat !== 'all' && subCategoryMap[mainCat]) {
         subCategoryMap[mainCat].forEach(sub => {
@@ -169,7 +185,6 @@
         });
       }
 
-      // 2. レベル／ランク表示切り替え
       const levelCategories = ["魔法", "練技", "呪歌・終律", "騎芸", "賦術"];
       const rankCategories = ["武器", "防具"];
 
@@ -178,7 +193,6 @@
         rankSelect.classList.add('hidden');
         rankSelect.value = 'all';
 
-        // レベル選択肢の生成
         levelSelect.innerHTML = '<option value="all">すべてのレベル</option>';
         if (mainCat === "魔法") {
           for (let i = 1; i <= 15; i++) {
@@ -209,7 +223,6 @@
       onSubCategoryChange();
     }
 
-    // 中カテゴリ変更時：特殊分類（神/属性）の表示切替
     function onSubCategoryChange() {
       const subCat = document.getElementById('sub-category').value;
       const specialSelect = document.getElementById('special-filter');
@@ -259,19 +272,14 @@
         if (activeTab === 'fav' && !bookmarks.includes(item.id)) return false;
         if (mainCat !== 'all' && item.type !== mainCat) return false;
         if (subCat !== 'all' && item.category !== subCat) return false;
-        
-        // レベルフィルター
         if (selectedLevel !== 'all' && String(item.level) !== String(selectedLevel)) return false;
-        // ランクフィルター
         if (selectedRank !== 'all' && item.rank !== selectedRank) return false;
-        // 特殊分類フィルター
         if (selectedSpecial !== 'all' && item.special !== selectedSpecial) return false;
 
         const matchText = (item.name + (item.category || '') + (item.special || '') + (item.effect || '')).toLowerCase();
         return matchText.includes(keyword);
       });
 
-      // ソート処理
       const rankOrder = { "B": 1, "A": 2, "S": 3, "SS": 4 };
       filtered.sort((a, b) => {
         if (sortKey === 'categoryOrder') {
@@ -317,7 +325,10 @@
                   ${item.rank ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300">${item.rank}ランク</span>` : ''}
                   ${item.special ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-200">${item.special}</span>` : ''}
                 </div>
-                <h2 class="text-base font-bold text-slate-900">${item.name}</h2>
+                <h2 class="text-base font-bold text-slate-900 flex items-center">
+                  ${renderTimingIcons(item.timing)}
+                  <span>【${item.name}】</span>
+                </h2>
               </div>
               <button onclick="toggleBookmark('${item.id}')" class="text-xl leading-none p-1 focus:outline-none">
                 ${isFav ? '★' : '☆'}
