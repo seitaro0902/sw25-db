@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SW2.5 データライブラリ</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1e293b">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 text-slate-800 pb-12">
+
+  <header class="bg-slate-800 text-white p-4 sticky top-0 z-10 shadow-md">
+    <div class="max-w-4xl mx-auto flex justify-between items-center">
+      <h1 class="text-xl font-bold flex items-center gap-2">
+        <span>🎲</span> SW2.5 データベース
+      </h1>
+      <div class="flex bg-slate-700 p-1 rounded-lg text-sm">
+        <button id="tab-all" onclick="setTab('all')" class="px-3 py-1 rounded-md bg-slate-900 font-bold transition">すべて</button>
+        <button id="tab-fav" onclick="setTab('fav')" class="px-3 py-1 rounded-md text-slate-300 transition">★ お気に入り</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto p-4 space-y-4">
+    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 space-y-3">
+      <input type="text" id="search-input" oninput="handleSearch()" placeholder="名称、カテゴリ、効果で検索..." 
+             class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500">
+
+      <div class="flex flex-wrap gap-2 text-sm">
+        <select id="type-filter" onchange="handleSearch()" class="px-3 py-2 border border-slate-300 rounded-lg bg-white">
+          <option value="all">すべての種別</option>
+          <option value="weapon">武器</option>
+          <option value="magic">魔法</option>
+        </select>
+
+        <select id="sort-select" onchange="handleSearch()" class="px-3 py-2 border border-slate-300 rounded-lg bg-white ml-auto">
+          <option value="name">五十音順</option>
+          <option value="reqStr">必筋が低い順</option>
+          <option value="power">威力が高い順</option>
+          <option value="price">価格が安い順</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="text-xs text-slate-500 px-1" id="result-count">検索結果: 0件</div>
+    <div id="card-container" class="grid gap-3 sm:grid-cols-2"></div>
+  </main>
+
+  <script>
+    let items = [];
+    let bookmarks = JSON.parse(localStorage.getItem('sw25_bookmarks') || '[]');
+    let activeTab = 'all';
+
+    // Service Worker の登録
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    }
+
+    // 外部JSONデータの取得
+    async function loadData() {
+      try {
+        const response = await fetch('data.json');
+        items = await response.json();
+        handleSearch();
+      } catch (e) {
+        document.getElementById('card-container').innerHTML = 
+          `<div class="col-span-full text-center py-8 text-rose-500">データの読み込みに失敗しました。</div>`;
+      }
+    }
+
+    function setTab(tab) {
+      activeTab = tab;
+      document.getElementById('tab-all').className = tab === 'all' ? 'px-3 py-1 rounded-md bg-slate-900 font-bold transition' : 'px-3 py-1 rounded-md text-slate-300 transition';
+      document.getElementById('tab-fav').className = tab === 'fav' ? 'px-3 py-1 rounded-md bg-slate-900 font-bold transition' : 'px-3 py-1 rounded-md text-slate-300 transition';
+      handleSearch();
+    }
+
+    function toggleBookmark(id) {
+      if (bookmarks.includes(id)) {
+        bookmarks = bookmarks.filter(bId => bId !== id);
+      } else {
+        bookmarks.push(id);
+      }
+      localStorage.setItem('sw25_bookmarks', JSON.stringify(bookmarks));
+      handleSearch();
+    }
+
+    function handleSearch() {
+      const keyword = document.getElementById('search-input').value.toLowerCase();
+      const selectedType = document.getElementById('type-filter').value;
+      const sortKey = document.getElementById('sort-select').value;
+
+      let filtered = items.filter(item => {
+        if (activeTab === 'fav' && !bookmarks.includes(item.id)) return false;
+        if (selectedType !== 'all' && item.type !== selectedType) return false;
+        const matchText = (item.name + item.category + (item.effect || '')).toLowerCase();
+        return matchText.includes(keyword);
+      });
+
+      filtered.sort((a, b) => {
+        if (sortKey === 'name') return a.name.localeCompare(b.name, 'ja');
+        if (sortKey === 'reqStr') return (a.reqStr || 0) - (b.reqStr || 0);
+        if (sortKey === 'power') return (b.power || 0) - (a.power || 0);
+        if (sortKey === 'price') return (a.price || 0) - (b.price || 0);
+        return 0;
+      });
+
+      render(filtered);
+    }
+
+    function render(data) {
+      const container = document.getElementById('card-container');
+      document.getElementById('result-count').textContent = `検索結果: ${data.length}件`;
+      container.innerHTML = '';
+
+      if (data.length === 0) {
+        container.innerHTML = `<div class="col-span-full text-center py-8 text-slate-400">該当するデータが見つかりません。</div>`;
+        return;
+      }
+
+      data.forEach(item => {
+        const isFav = bookmarks.includes(item.id);
+        const card = document.createElement('div');
+        card.className = "bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between hover:border-slate-400 transition";
+
+        card.innerHTML = `
+          <div>
+            <div class="flex justify-between items-start mb-2">
+              <div>
+                <span class="inline-block text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600 mb-1 border">${item.category}</span>
+                <h2 class="text-base font-bold text-slate-900">${item.name}</h2>
+              </div>
+              <button onclick="toggleBookmark('${item.id}')" class="text-xl leading-none p-1 focus:outline-none">
+                ${isFav ? '★' : '☆'}
+              </button>
+            </div>
+            ${item.type === 'weapon' ? `
+              <div class="grid grid-cols-4 gap-1 bg-slate-50 p-2 rounded text-center text-xs mb-2 border border-slate-100">
+                <div><span class="text-slate-400 block text-[9px]">用法</span>${item.usage}</div>
+                <div><span class="text-slate-400 block text-[9px]">必筋</span>${item.reqStr}</div>
+                <div><span class="text-slate-400 block text-[9px]">威力</span>${item.power}</div>
+                <div><span class="text-slate-400 block text-[9px]">C値</span>${item.crit}</div>
+              </div>
+            ` : ''}
+            <p class="text-xs text-slate-600 mb-3 leading-relaxed">${item.effect || ''}</p>
+          </div>
+          <div class="flex justify-between items-center text-[11px] text-slate-400 pt-2 border-t border-slate-100">
+            <span>価格: <strong class="text-slate-700">${item.price ? item.price + ' G' : '-'}</strong></span>
+            <span>${item.book || ''} p.${item.page || '-'}</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    loadData();
+  </script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+[
+  {
+    "id": "w001",
+    "type": "weapon",
+    "name": "ヘビーメイス",
+    "category": "メイス",
+    "usage": "2H",
+    "reqStr": 15,
+    "power": 25,
+    "crit": 12,
+    "price": 330,
+    "effect": "打撃力に優れる大型の槌。クリティカル値は12固定。",
+    "book": "基本1",
+    "page": 240
+  },
+  {
+    "id": "w002",
+    "type": "weapon",
+    "name": "ショートソード",
+    "category": "剣",
+    "usage": "1H",
+    "reqStr": 5,
+    "power": 10,
+    "crit": 10,
+    "price": 60,
+    "effect": "扱いやすい小型の片手剣。",
+    "book": "基本1",
+    "page": 238
+  },
+  {
+    "id": "m001",
+    "type": "magic",
+    "name": "エネルギー・ボルト",
+    "category": "真語魔法",
+    "usage": "-",
+    "reqStr": 0,
+    "power": 10,
+    "crit": 10,
+    "price": 0,
+    "effect": "純粋な魔力の矢を放ち、[威力10+魔力]の魔法ダメージを与える。消費MP:3",
+    "book": "基本1",
+    "page": 210
+  }
+]
