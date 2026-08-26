@@ -50,7 +50,7 @@
           <option value="all">すべての中カテゴリ</option>
         </select>
 
-        <!-- ランク（武器・防具用） -->
+        <!-- ランク -->
         <select id="rank-filter" onchange="handleSearch()" class="px-3 py-2 border border-slate-300 rounded-lg bg-white">
           <option value="all">すべてのランク</option>
           <option value="B">Bランク</option>
@@ -61,6 +61,7 @@
 
         <!-- ソート -->
         <select id="sort-select" onchange="handleSearch()" class="px-3 py-2 border border-slate-300 rounded-lg bg-white">
+          <option value="categoryOrder">大カテゴリ順</option>
           <option value="name">五十音順</option>
           <option value="reqStr">必筋が低い順</option>
           <option value="power">威力が高い順</option>
@@ -74,7 +75,22 @@
   </main>
 
   <script>
-    // 定義データ: 中カテゴリマップ
+    // 指定された大カテゴリの優先順位
+    const mainCategoryOrder = [
+      "魔法", "練技", "呪歌・終律", "騎芸", "賦術", "戦闘特技", 
+      "武器", "防具", "アイテム", "装飾品", "騎獣"
+    ];
+
+    // 英語表記から日本語への変換マップ
+    const typeEnglishToJapanese = {
+      "weapon": "武器",
+      "magic": "魔法",
+      "armor": "防具",
+      "item": "アイテム",
+      "accessory": "装飾品"
+    };
+
+    // 中カテゴリマップ
     const subCategoryMap = {
       "魔法": ["真語魔法", "操霊魔法", "神聖魔法", "魔動機術", "妖精魔法"],
       "練技": ["1レベル", "5レベル", "10レベル"],
@@ -100,7 +116,16 @@
     async function loadData() {
       try {
         const response = await fetch('data.json');
-        items = await response.json();
+        const rawData = await response.json();
+        
+        // データの表記揺れ（英語→日本語）を自動補正
+        items = rawData.map(item => {
+          if (typeEnglishToJapanese[item.type]) {
+            item.type = typeEnglishToJapanese[item.type];
+          }
+          return item;
+        });
+
         updateSubCategories();
         handleSearch();
       } catch (e) {
@@ -109,7 +134,6 @@
       }
     }
 
-    // 大カテゴリ選択に合わせて中カテゴリのドロップダウンを動的変更
     function updateSubCategories() {
       const mainCat = document.getElementById('main-category').value;
       const subSelect = document.getElementById('sub-category');
@@ -159,7 +183,15 @@
         return matchText.includes(keyword);
       });
 
+      // ソート処理
       filtered.sort((a, b) => {
+        if (sortKey === 'categoryOrder') {
+          const indexA = mainCategoryOrder.indexOf(a.type);
+          const indexB = mainCategoryOrder.indexOf(b.type);
+          const orderA = indexA === -1 ? 999 : indexA;
+          const orderB = indexB === -1 ? 999 : indexB;
+          return orderA - orderB;
+        }
         if (sortKey === 'name') return a.name.localeCompare(b.name, 'ja');
         if (sortKey === 'reqStr') return (a.reqStr || 0) - (b.reqStr || 0);
         if (sortKey === 'power') return (b.power || 0) - (a.power || 0);
