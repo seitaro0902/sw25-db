@@ -161,20 +161,20 @@
       return html;
     }
     
-function renderGakusoIcon(val) {
-  if (!val || val === '-') return '-';
-  let text = String(val);
-  text = text.replace(/\[高揚\]/g, 
-    `<span class="inline-flex items-center justify-center px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-300 font-extrabold text-xs mr-0.5" title="高揚">⤴︎</span>`
-  );
-  text = text.replace(/\[鎮静\]/g, 
-    `<span class="inline-flex items-center justify-center px-1.5 py-0.5 rounded-full bg-sky-100 text-sky-700 border border-sky-300 font-extrabold text-xs mr-0.5" title="鎮静">⤵︎</span>`
-  );
-  text = text.replace(/\[魅惑\]/g, 
-    `<span class="inline-flex items-center justify-center px-1.5 py-0.5 rounded-full bg-pink-100 text-pink-600 border border-pink-300 text-xs mr-0.5" title="魅惑">♥</span>`
-  );
-  return text;
-}
+    function renderGakusoIcon(val) {
+      if (!val || val === '-') return '-';
+      let text = String(val);
+      text = text.replace(/\[高揚\]/g, 
+        `<span class="inline-flex items-center justify-center px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-300 font-extrabold text-xs mr-0.5" title="高揚">⤴︎</span>`
+      );
+      text = text.replace(/\[鎮静\]/g, 
+        `<span class="inline-flex items-center justify-center px-1.5 py-0.5 rounded-full bg-sky-100 text-sky-700 border border-sky-300 font-extrabold text-xs mr-0.5" title="鎮静">⤵︎</span>`
+      );
+      text = text.replace(/\[魅惑\]/g, 
+        `<span class="inline-flex items-center justify-center px-1.5 py-0.5 rounded-full bg-pink-100 text-pink-600 border border-pink-300 text-xs mr-0.5" title="魅惑">♥</span>`
+      );
+      return text;
+    }
     
     // 各カテゴリごとのステータス表レンダラー
     function renderSpecTable(item) {
@@ -502,12 +502,12 @@ function renderGakusoIcon(val) {
 
             ${renderSpecTable(item)}
 
-            <p class="text-xs text-slate-600 mb-3 leading-relaxed">${item.effect || item.details || ''}</p>
+            <p class="text-xs text-slate-600 mb-3 leading-relaxed whitespace-pre-wrap">${item.effect || item.details || ''}</p>
             ${item.remarks ? `<p class="text-[11px] text-slate-500 italic mb-2">備考: ${item.remarks}</p>` : ''}
           </div>
 
           <div class="flex justify-between items-center text-[11px] text-slate-400 pt-2 border-t border-slate-100">
-            <span>価格: <strong class="text-slate-700">${item.price ? item.price + ' G' : '-'}</strong></span>
+            ${item.price && item.price !== '-' ? `<span>価格: <strong class="text-slate-700">${item.price} G</strong></span>` : '<div></div>'}
             <span>${item.book || ''} ${item.page ? 'p.' + item.page : ''}</span>
           </div>
         `;
