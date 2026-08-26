@@ -59,7 +59,7 @@
     "element": "精神効果",
     "baseElement": "強奏",
     "craftVal": 15,
-    "addElement": "上昇",
+    "addElement": "[上昇]",
     "summary": "味方の物理ダメージ上昇",
     "effect": "対象が与える物理ダメージを+1する。",
     "book": "基本2",
