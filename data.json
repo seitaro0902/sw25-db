@@ -5,6 +5,7 @@
     "type": "真語魔法",
     "level": 1,
     "mp": "MP5",
+    "timing": ["補助動作", "常時効果"],
     "target": "1体",
     "range": "2(30m)/射撃",
     "duration": "一瞬",
