@@ -236,7 +236,7 @@
         return `<div class="grid grid-cols-3 sm:grid-cols-5 gap-1 bg-slate-50 p-2 rounded text-center text-xs mb-2 border border-slate-100">
           ${cell('歌唱', item.singing)}
           ${cell('ペット', item.pet)}
-          ${cell('発生条件', item.condition)}
+          ${cell('発生条件', renderGakusoIcon(item.addElement))}
           ${cell('抵抗', item.resist)}
           ${cell('属性', item.element)}
           ${cell('基礎楽素', renderGakusoIcon(item.baseElement))}
