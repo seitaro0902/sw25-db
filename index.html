@@ -248,7 +248,7 @@
       // 5. 終律
       if (type === '呪歌・終律' && category === '終律') {
         return `<div class="grid grid-cols-3 gap-1 bg-slate-50 p-2 rounded text-center text-xs mb-2 border border-slate-100">
-          ${cell('消費', item.mp)}
+          ${cell('消費', renderGakusoIcon(item.mp))}
           ${cell('抵抗', item.resist)}
           ${cell('属性', item.element)}
         </div>`;
