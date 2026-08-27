@@ -161,13 +161,15 @@
       const list = Array.isArray(timing) ? timing : [timing];
       let html = '<span class="inline-flex gap-0.5 items-center mr-1.5 leading-none">';
 
-      list.forEach(t => {
-        if (t === '補助動作' || t === '▶▶') {
+list.forEach(t => {
+        if (t === '補助動作') {
           html += `<span class="bg-slate-900 text-white px-1 py-0.5 rounded text-[11px] font-bold tracking-tighter" title="補助動作">▶▶</span>`;
-        } else if (t === '戦闘準備' || t === '△') {
+        } else if (t === '戦闘準備') {
           html += `<span class="bg-slate-100 text-slate-800 border border-slate-400 px-1 py-0.5 rounded text-[11px] font-bold" title="戦闘準備">△</span>`;
-        } else if (t === '主動作' || t === '▶') {
+        } else if (t === '主動作') {
           html += `<span class="bg-slate-900 text-white px-1 py-0.5 rounded text-[11px] font-bold" title="主動作">▶</span>`;
+        } else if (t === '常時効果') {
+          html += `<span class="bg-slate-200 text-slate-800 border border-slate-300 px-1 py-0.5 rounded text-[11px] font-bold" title="常時効果">◯</span>`;
         } else {
           html += `<span class="bg-slate-200 text-slate-700 px-1 py-0.5 rounded text-[10px] font-bold">${t}</span>`;
         }
