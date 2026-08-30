@@ -7098,7 +7098,7 @@
     "type": "騎芸",
     "level": 1,
     "name": "威嚇",
-    "timing": "[補助動作]",
+    "timing": ["補助動作"],
     "prereq": "なし",
     "compatible": "動物、幻獣",
     "part": "コア部位",
