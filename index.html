@@ -351,22 +351,48 @@ list.forEach(t => {
         </div>`;
       }
 
-      // 10. 防具
+// 10. 防具
       if (type === '防具') {
+        let html = '';
+
+        // 基本の防具性能
         if (category === '盾') {
-          return `<div class="grid grid-cols-4 gap-1 bg-slate-50 p-2 rounded text-center text-xs mb-2 border border-slate-100">
+          html = `<div class="grid grid-cols-4 gap-1 bg-slate-50 p-2 rounded text-center text-xs border border-slate-100">
             ${cell('用法', item.usage)}
             ${cell('必筋', item.reqStr)}
             ${cell('回避', item.evasion)}
             ${cell('防護点', item.def)}
           </div>`;
         } else {
-          return `<div class="grid grid-cols-3 gap-1 bg-slate-50 p-2 rounded text-center text-xs mb-2 border border-slate-100">
+          html = `<div class="grid grid-cols-3 gap-1 bg-slate-50 p-2 rounded text-center text-xs border border-slate-100">
             ${cell('必筋', item.reqStr)}
             ${cell('回避', item.evasion)}
             ${cell('防護点', item.def)}
           </div>`;
         }
+
+        // 武器性能（weaponSpecが存在する場合に追加表示）
+        if (item.weaponSpec) {
+          const w = item.weaponSpec;
+          html += `
+            <div class="mt-1.5 bg-amber-50/60 p-2 rounded border border-amber-200/70">
+              <div class="text-[10px] font-bold text-amber-800 mb-1 flex items-center justify-between">
+                <span>武器性能</span>
+                ${w.category ? `<span class="text-amber-700 font-normal text-[9px]">（${w.category}）</span>` : ''}
+              </div>
+              <div class="grid grid-cols-6 gap-1 text-center text-xs">
+                ${cell('用法', w.usage)}
+                ${cell('必筋', w.reqStr)}
+                ${cell('命中', w.acc)}
+                ${cell('威力', w.power)}
+                ${cell('C値', w.crit)}
+                ${cell('追加D', w.extraDmg)}
+              </div>
+            </div>
+          `;
+        }
+
+        return html;
       }
 
       return '';

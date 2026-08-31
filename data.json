@@ -9498,6 +9498,7 @@
     "type": "武器",
     "category": "ソード",
     "name": "ナイフ",
+    "rank": "B",
     "usage": "1H投",
     "reqStr": 1,
     "acc": "―",
@@ -9509,16 +9510,39 @@
     "page": 301
   },
   {
-    "id": "karmen_capper",
-    "name": "カーメンキャッパー",
+    "id": "w011",
+    "name": "ロングソード",
     "type": "武器",
-    "category": "メイス",
-    "rank": "S",
-    "price": "38,000",
+    "category": "ソード",
+    "rank": "B",
+    "price": "440",
     "usages": [
-      { "usage": "1H両", "reqStr": 23, "acc": "+3", "power": 33, "crit": 12, "extraDmg": "+1" },
-      { "usage": "2H", "reqStr": 23, "acc": "+3", "power": 43, "crit": 12, "extraDmg": "+1" }
+      { "usage": "1H両", "reqStr": 13, "acc": "―", "power": 13, "crit": 10, "extraDmg": "―" },
+      { "usage": "2H", "reqStr": 13, "acc": "―", "power": 23, "crit": 10, "extraDmg": "―" }
     ],
-    "effect": "（効果のテキスト...）"
-  }
+    "book": "基本ルールブック Ⅰ",
+    "page": 301
+  },
+  {
+  "id": "spike_shield",
+  "name": "スパイクシールド",
+  "type": "防具",
+  "category": "盾",
+  "rank": "B",
+  "price": "1,800",
+  "usage": "1H",
+  "reqStr": 13,
+  "evasion": "+1",
+  "def": "2/0",
+  "weaponSpec": {
+    "category": "格闘",
+    "usage": "1H",
+    "reqStr": 13,
+    "acc": "-2",
+    "power": 13,
+    "crit": 10,
+    "extraDmg": "-"
+  },
+  "effect": "武器としても使用可能です。"
+}
 ]
