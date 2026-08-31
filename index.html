@@ -194,30 +194,42 @@ list.forEach(t => {
       return text;
     }
     
-    // 名前と属性表記（[魔] / [刃] / [打]）の整形関数
+// 名前と属性表記（[魔] / [刃] / [打]）の整形関数
     function renderFormattedName(item) {
-      if (!item.attributes || !Array.isArray(item.attributes)) {
-        return `【${item.name}】`;
+      // 1. カテゴリに応じた括弧の決定
+      let openB = '【';
+      let closeB = '】';
+
+      if (item.type === '戦闘特技') {
+        openB = '《';
+        closeB = '》';
+      } else if (['武器', '防具', 'アイテム', '装飾品'].includes(item.type)) {
+        openB = '〈';
+        closeB = '〉';
       }
 
-      const attrs = item.attributes;
+      // 2. 属性表記（[魔] / [刃] / [打]）の組み立て
       let prefix = '';
       let suffix = '';
 
-      // 魔法のアイテム判定（左側）
-      if (attrs.includes('魔法のアイテム') || attrs.includes('魔')) {
-        prefix = `<span class="text-purple-600 font-bold mr-0.5">[魔]</span>`;
+      if (item.attributes && Array.isArray(item.attributes)) {
+        const attrs = item.attributes;
+
+        // 魔法のアイテム判定（左側）
+        if (attrs.includes('魔法のアイテム') || attrs.includes('魔')) {
+          prefix = `<span class="text-purple-600 font-bold mr-0.5">[魔]</span>`;
+        }
+
+        // 属性判定（右側）
+        if (attrs.includes('刃属性') || attrs.includes('刃')) {
+          suffix += `<span class="text-slate-700 font-bold ml-0.5">[刃]</span>`;
+        }
+        if (attrs.includes('打撃属性') || attrs.includes('打')) {
+          suffix += `<span class="text-slate-700 font-bold ml-0.5">[打]</span>`;
+        }
       }
 
-      // 属性判定（右側）
-      if (attrs.includes('刃属性') || attrs.includes('刃')) {
-        suffix += `<span class="text-slate-700 font-bold ml-0.5">[刃]</span>`;
-      }
-      if (attrs.includes('打撃属性') || attrs.includes('打')) {
-        suffix += `<span class="text-slate-700 font-bold ml-0.5">[打]</span>`;
-      }
-
-      return `${prefix}【${item.name}】${suffix}`;
+      return `${prefix}${openB}${item.name}${closeB}${suffix}`;
     }
 
     // 各カテゴリごとのステータス表レンダラー
