@@ -278,10 +278,28 @@ list.forEach(t => {
 
       // 8. 戦闘特技
       if (type === '戦闘特技') {
-        return `<div class="grid grid-cols-2 gap-1 bg-slate-50 p-2 rounded text-center text-xs mb-2 border border-slate-100">
-          ${cell('前提', item.prereq)}
-          ${cell('使用', item.usage)}
+        if (category === '選択習得の宣言特技') {
+          return `<div class="grid grid-cols-4 gap-1 bg-slate-50 p-2 rounded text-center text-xs mb-2 border border-slate-100">
+            ${cell('前提', item.prereq)}
+            ${cell('使用', item.usage)}
+            ${cell('適用'), item.apply}
+            ${cell('リスク', item.risk)}
+          </div>`;
+        } else if (category === '自動習得の常時特技') {
+          return `<div class="grid grid-cols-2 gap-1 bg-slate-50 p-2 rounded text-center text-xs mb-2 border border-slate-100">
+            ${cell('習得', item.master)}
+            ${cell('使用', item.usage)}
         </div>`;
+        } else {
+          return `<div class="grid grid-cols-2 gap-1 bg-slate-50 p-2 rounded text-center text-xs mb-2 border border-slate-100">
+            ${cell('前提', item.prereq)}
+            ${cell('使用', item.usage)}
+        </div>`;
+        }
+      }
+
+      if (type === '戦闘特技' && category === '選択習得の宣言特技') {
+
       }
 
       // 9. 武器
