@@ -194,6 +194,32 @@ list.forEach(t => {
       return text;
     }
     
+    // 名前と属性表記（[魔] / [刃] / [打]）の整形関数
+    function renderFormattedName(item) {
+      if (!item.attributes || !Array.isArray(item.attributes)) {
+        return `【${item.name}】`;
+      }
+
+      const attrs = item.attributes;
+      let prefix = '';
+      let suffix = '';
+
+      // 魔法のアイテム判定（左側）
+      if (attrs.includes('魔法のアイテム') || attrs.includes('魔')) {
+        prefix = `<span class="text-purple-600 font-bold mr-0.5">[魔]</span>`;
+      }
+
+      // 属性判定（右側）
+      if (attrs.includes('刃属性') || attrs.includes('刃')) {
+        suffix += `<span class="text-slate-700 font-bold ml-0.5">[刃]</span>`;
+      }
+      if (attrs.includes('打撃属性') || attrs.includes('打')) {
+        suffix += `<span class="text-slate-700 font-bold ml-0.5">[打]</span>`;
+      }
+
+      return `${prefix}【${item.name}】${suffix}`;
+    }
+
     // 各カテゴリごとのステータス表レンダラー
     function renderSpecTable(item) {
       const type = item.type;
@@ -562,9 +588,9 @@ list.forEach(t => {
                   ${item.rank ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300">${item.rank}ランク</span>` : ''}
                   ${item.special ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-200">${item.special}</span>` : ''}
                 </div>
-                <h2 class="text-base font-bold text-slate-900 flex items-center">
+                <h2 class="text-base font-bold text-slate-900 flex items-center flex-wrap">
                   ${renderTimingIcons(item.timing)}
-                  <span>【${item.name}】</span>
+                  <span>${renderFormattedName(item)}</span>
                 </h2>
               </div>
               <button onclick="toggleBookmark('${item.id}')" class="text-xl leading-none p-1 focus:outline-none">

@@ -9523,13 +9523,13 @@
     "book": "基本ルールブック Ⅰ",
     "page": 301
   },
-  {
+{
   "id": "spike_shield",
   "name": "スパイクシールド",
   "type": "防具",
   "category": "盾",
   "rank": "B",
-  "price": "1,800",
+  "attributes": ["魔法のアイテム", "刃属性", "打撃属性"],
   "usage": "1H",
   "reqStr": 13,
   "evasion": "+1",
@@ -9542,7 +9542,6 @@
     "power": 13,
     "crit": 10,
     "extraDmg": "-"
-  },
-  "effect": "武器としても使用可能です。"
+  }
 }
 ]
