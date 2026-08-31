@@ -302,41 +302,53 @@ list.forEach(t => {
 
       }
 
-      // 9. 武器
+// 9. 武器
       if (type === '武器') {
-        if (category === '投擲') {
-          return `<div class="grid grid-cols-4 sm:grid-cols-7 gap-1 bg-slate-50 p-2 rounded text-center text-xs mb-2 border border-slate-100">
-            ${cell('用法', item.usage)}
-            ${cell('必筋', item.reqStr)}
-            ${cell('命中', item.acc)}
-            ${cell('威力', item.power)}
-            ${cell('C値', item.crit)}
-            ${cell('追加D', item.extraDmg)}
-            ${cell('射程', item.range)}
-          </div>`;
-        } else if (category === 'ガン') {
-          return `<div class="grid grid-cols-3 sm:grid-cols-6 gap-1 bg-slate-50 p-2 rounded text-center text-xs mb-2 border border-slate-100">
-            ${cell('用法', item.usage)}
-            ${cell('装填数', item.maxAmmo)}
-            ${cell('命中', item.acc)}
-            ${cell('C値', item.crit)}
-            ${cell('追加D', item.extraDmg)}
-            ${cell('射程', item.range)}
-          </div>`;
-        } else if (category === '矢弾') {
+        if (category === '矢弾') {
           return `<div class="grid grid-cols-1 gap-1 bg-slate-50 p-2 rounded text-center text-xs mb-2 border border-slate-100">
             ${cell('対応カテゴリ', item.compatibleCategory)}
           </div>`;
-        } else {
-          return `<div class="grid grid-cols-3 sm:grid-cols-6 gap-1 bg-slate-50 p-2 rounded text-center text-xs mb-2 border border-slate-100">
-            ${cell('用法', item.usage)}
-            ${cell('必筋', item.reqStr)}
-            ${cell('命中', item.acc)}
-            ${cell('威力', item.power)}
-            ${cell('C値', item.crit)}
-            ${cell('追加D', item.extraDmg)}
-          </div>`;
         }
+
+        // usages配列があればそれを使い、なければ従来の単一プロパティから配列を作成（互換性維持）
+        const usageList = Array.isArray(item.usages) ? item.usages : [{
+          usage: item.usage,
+          reqStr: item.reqStr,
+          acc: item.acc,
+          power: item.power,
+          crit: item.crit,
+          extraDmg: item.extraDmg,
+          range: item.range,
+          maxAmmo: item.maxAmmo
+        }];
+
+        // カテゴリごとの列構成
+        let cols = "grid-cols-6";
+        let headers = ["用法", "必筋", "命中", "威力", "C値", "追加D"];
+        let keys = ["usage", "reqStr", "acc", "power", "crit", "extraDmg"];
+
+        if (category === '投擲') {
+          cols = "grid-cols-7";
+          headers = ["用法", "必筋", "命中", "威力", "C値", "追加D", "射程"];
+          keys = ["usage", "reqStr", "acc", "power", "crit", "extraDmg", "range"];
+        } else if (category === 'ガン') {
+          cols = "grid-cols-6";
+          headers = ["用法", "装填", "命中", "C値", "追加D", "射程"];
+          keys = ["usage", "maxAmmo", "acc", "crit", "extraDmg", "range"];
+        }
+
+        return `<div class="bg-slate-50 p-2 rounded text-center text-xs mb-2 border border-slate-100">
+          <div class="grid ${cols} gap-1 text-[9px] text-slate-400 border-b border-slate-200 pb-1 mb-1 font-medium">
+            ${headers.map(h => `<div>${h}</div>`).join('')}
+          </div>
+          <div class="space-y-1">
+            ${usageList.map(u => `
+              <div class="grid ${cols} gap-1 font-medium text-slate-800 text-xs items-center">
+                ${keys.map(k => `<div>${u[k] ?? '-'}</div>`).join('')}
+              </div>
+            `).join('')}
+          </div>
+        </div>`;
       }
 
       // 10. 防具
