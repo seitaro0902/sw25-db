@@ -24,7 +24,7 @@
 
   <main class="max-w-4xl mx-auto p-4 space-y-4">
     <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 space-y-3">
-      <input type="text" id="search-input" oninput="handleSearch()" placeholder="名称、効果、概要、形状、属性などで検索..." 
+      <input type="text" id="search-input" oninput="handleSearch()" placeholder="名称、効果、概要、形状、属性、部位などで検索..." 
              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500">
 
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm">
@@ -145,6 +145,7 @@
           if (item.reputation && !item.fame) item.fame = item.reputation;
           if (item.appearance && !item.shape) item.shape = item.appearance;
           if ((item.period || item.createdEra) && !item.era) item.era = item.period || item.createdEra;
+          if (item.equip && !item.part) item.part = item.equip;
 
           return item;
         });
@@ -229,12 +230,12 @@
       return `${prefix}${openB}${item.name}${closeB}${suffix}`;
     }
 
-    // 特殊枠アイテムの判定関数
+    // 特殊枠アイテムの判定関数（武器・防具・アイテム・装飾品共通）
     function isSpecialItemFormat(item) {
       return item.fame !== undefined || item.shape !== undefined || item.era !== undefined || item.isSpecialFormat === true;
     }
 
-    // 画像スタイルの特殊アイテム枠レンダラー（カテゴリ〈ランク〉削除版）
+    // 画像スタイルの特殊アイテム枠レンダラー
     function renderSpecialItemTable(item) {
       return `
         <div class="border border-slate-300 rounded-lg overflow-hidden text-[11px] sm:text-xs mb-3 bg-white shadow-sm">
@@ -456,6 +457,28 @@
         return html;
       }
 
+      // 11. 装飾品（部位や各種データが存在する場合）
+      if (type === '装飾品') {
+        if (item.part || item.usage || item.reqStr) {
+          return `<div class="grid grid-cols-2 sm:grid-cols-3 gap-1 bg-slate-50 p-2 rounded text-center text-xs mb-2 border border-slate-100">
+            ${cell('装備部位', item.part || category)}
+            ${item.usage ? cell('用法', item.usage) : ''}
+            ${item.reqStr ? cell('必筋', item.reqStr) : ''}
+          </div>`;
+        }
+      }
+
+      // 12. アイテム（用法や必筋、容量などデータが存在する場合）
+      if (type === 'アイテム') {
+        if (item.usage || item.reqStr || item.capacity) {
+          return `<div class="grid grid-cols-2 sm:grid-cols-3 gap-1 bg-slate-50 p-2 rounded text-center text-xs mb-2 border border-slate-100">
+            ${item.usage ? cell('用法', item.usage) : ''}
+            ${item.reqStr ? cell('必筋', item.reqStr) : ''}
+            ${item.capacity ? cell('容量', item.capacity) : ''}
+          </div>`;
+        }
+      }
+
       return '';
     }
 
@@ -576,7 +599,8 @@
           (item.remarks || '') +
           (item.fame || '') +
           (item.shape || '') +
-          (item.era || '')
+          (item.era || '') +
+          (item.part || '')
         ).toLowerCase();
         return matchText.includes(keyword);
       });
@@ -613,12 +637,12 @@
       data.forEach(item => {
         const isFav = bookmarks.includes(item.id);
         const isSpecial = isSpecialItemFormat(item);
-        const specTableHtml = renderSpecTable(item); // 用法・必筋・命中・威力・C値・追加D等のステータス表
+        const specTableHtml = renderSpecTable(item);
         
         const card = document.createElement('div');
         card.className = "bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between hover:border-slate-400 transition";
 
-        // 特殊枠と通常ステータス表の同時表示設定
+        // 特殊枠と通常ステータス表の表示ロジック
         let bodyHtml = '';
         if (isSpecial) {
           bodyHtml = `
