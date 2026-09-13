@@ -234,22 +234,16 @@
       return item.fame !== undefined || item.shape !== undefined || item.era !== undefined || item.isSpecialFormat === true;
     }
 
-    // 画像スタイルの特殊アイテム枠レンダラー
+    // 画像スタイルの特殊アイテム枠レンダラー（カテゴリ〈ランク〉削除版）
     function renderSpecialItemTable(item) {
-      const categoryRank = item.category 
-        ? `〈${item.category}〉${item.rank || ''}` 
-        : (item.rank ? `${item.rank}ランク` : '-');
-
       return `
         <div class="border border-slate-300 rounded-lg overflow-hidden text-[11px] sm:text-xs mb-3 bg-white shadow-sm">
-          <!-- 1行目: 知名度 | 形状 | カテゴリ〈ランク〉 -->
+          <!-- 1行目: 知名度 | 形状 -->
           <div class="grid grid-cols-12 border-b border-slate-300 text-center items-stretch">
             <div class="col-span-2 bg-slate-100 py-1.5 px-1 font-bold text-slate-700 border-r border-slate-300 flex items-center justify-center">知名度</div>
             <div class="col-span-2 py-1.5 px-1 font-medium border-r border-slate-300 flex items-center justify-center">${item.fame ?? '-'}</div>
             <div class="col-span-2 bg-slate-100 py-1.5 px-1 font-bold text-slate-700 border-r border-slate-300 flex items-center justify-center">形状</div>
-            <div class="col-span-3 py-1.5 px-1 font-medium border-r border-slate-300 flex items-center justify-center text-left leading-tight">${item.shape ?? '-'}</div>
-            <div class="col-span-1.5 bg-slate-100 py-1 px-0.5 font-bold text-slate-700 border-r border-slate-300 flex items-center justify-center text-[9px] sm:text-[10px] leading-tight">カテゴリ<br>〈ランク〉</div>
-            <div class="col-span-1.5 py-1.5 px-1 font-medium flex items-center justify-center text-[10px] sm:text-xs">${categoryRank}</div>
+            <div class="col-span-6 py-1.5 px-2 font-medium flex items-center text-left leading-tight">${item.shape ?? '-'}</div>
           </div>
           
           <!-- 2行目: 概要 | 製作時期 -->
@@ -373,7 +367,7 @@
         }
       }
 
-      // 9. 武器（通常枠）
+      // 9. 武器
       if (type === '武器') {
         if (category === '矢弾') {
           return `<div class="grid grid-cols-1 gap-1 bg-slate-50 p-2 rounded text-center text-xs mb-2 border border-slate-100">
@@ -381,7 +375,7 @@
           </div>`;
         }
 
-        const usageList = Array.isArray(item.usages) ? item.usages : [{
+        const usageList = Array.isArray(item.usages) ? item.usages : (item.usage || item.reqStr !== undefined ? [{
           usage: item.usage,
           reqStr: item.reqStr,
           acc: item.acc,
@@ -390,7 +384,9 @@
           extraDmg: item.extraDmg,
           range: item.range,
           maxAmmo: item.maxAmmo
-        }];
+        }] : []);
+
+        if (usageList.length === 0) return '';
 
         let cols = "grid-cols-6";
         let headers = ["用法", "必筋", "命中", "威力", "C値", "追加D"];
@@ -424,14 +420,14 @@
       if (type === '防具') {
         let html = '';
         if (category === '盾') {
-          html = `<div class="grid grid-cols-4 gap-1 bg-slate-50 p-2 rounded text-center text-xs border border-slate-100">
+          html = `<div class="grid grid-cols-4 gap-1 bg-slate-50 p-2 rounded text-center text-xs border border-slate-100 mb-2">
             ${cell('用法', item.usage)}
             ${cell('必筋', item.reqStr)}
             ${cell('回避', item.evasion)}
             ${cell('防護点', item.def)}
           </div>`;
         } else {
-          html = `<div class="grid grid-cols-3 gap-1 bg-slate-50 p-2 rounded text-center text-xs border border-slate-100">
+          html = `<div class="grid grid-cols-3 gap-1 bg-slate-50 p-2 rounded text-center text-xs border border-slate-100 mb-2">
             ${cell('必筋', item.reqStr)}
             ${cell('回避', item.evasion)}
             ${cell('防護点', item.def)}
@@ -441,7 +437,7 @@
         if (item.weaponSpec) {
           const w = item.weaponSpec;
           html += `
-            <div class="mt-1.5 bg-amber-50/60 p-2 rounded border border-amber-200/70">
+            <div class="mt-1.5 mb-2 bg-amber-50/60 p-2 rounded border border-amber-200/70">
               <div class="text-[10px] font-bold text-amber-800 mb-1 flex items-center justify-between">
                 <span>武器性能</span>
                 ${w.category ? `<span class="text-amber-700 font-normal text-[9px]">（${w.category}）</span>` : ''}
@@ -617,22 +613,27 @@
       data.forEach(item => {
         const isFav = bookmarks.includes(item.id);
         const isSpecial = isSpecialItemFormat(item);
+        const specTableHtml = renderSpecTable(item); // 用法・必筋・命中・威力・C値・追加D等のステータス表
+        
         const card = document.createElement('div');
         card.className = "bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between hover:border-slate-400 transition";
 
-        // 特殊枠表示か通常表示かの判定・組み立て
+        // 特殊枠と通常ステータス表の同時表示設定
         let bodyHtml = '';
         if (isSpecial) {
-          bodyHtml = renderSpecialItemTable(item);
+          bodyHtml = `
+            ${specTableHtml}
+            ${renderSpecialItemTable(item)}
+          `;
         } else {
           bodyHtml = `
             ${item.summary ? `<p class="text-xs font-semibold text-slate-700 mb-2 bg-slate-50 p-1.5 rounded border-l-2 border-slate-400">${item.summary}</p>` : ''}
-            ${renderSpecTable(item)}
+            ${specTableHtml}
             <p class="text-xs text-slate-600 mb-3 leading-relaxed whitespace-pre-wrap">${item.effect || item.details || ''}</p>
           `;
         }
 
-        // 価格表記の整形（数値の場合は末尾に「 G」、文字列の場合はそのまま）
+        // 価格表記の整形
         let priceStr = '';
         if (item.price && item.price !== '-') {
           const displayPrice = (typeof item.price === 'number' || (!isNaN(item.price) && !String(item.price).includes('G'))) 
