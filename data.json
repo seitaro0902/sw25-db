@@ -6,7 +6,7 @@
     "level": 1,
     "mp": "MP5",
     "target": "1体",
-    "/": "2(30m)/射撃",
+    "range": "2(30m)/射撃",
     "duration": "一瞬",
     "resist": "半滅",
     "element": "純エネルギー",
