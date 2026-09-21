@@ -12707,6 +12707,7 @@
     "type": "武器",
     "category": "矢弾",
     "name": "魔力の矢",
+    "attributes": ["魔法のアイテム"],
     "compatibleCategory": "〈ボウ〉",
     "price": 1400,
     "fame": 0,
@@ -12722,6 +12723,7 @@
     "type": "武器",
     "category": "矢弾",
     "name": "魔力の太矢",
+    "attributes": ["魔法のアイテム"],
     "compatibleCategory": "〈クロスボウ〉",
     "price": 1400,
     "fame": 0,
@@ -12761,5 +12763,344 @@
     "effect": "　カテゴリ〈ガン〉の武器で射てる〈矢弾〉です。この弾丸を用いた場合、地上と同じように射撃攻撃を行えます。地上でも通常の〈弾丸〉として使えます。",
     "book": "基本ルールブック Ⅱ",
     "page": 244
+  },
+  {
+    "id": "w196",
+    "type": "武器",
+    "category": "ソード",
+    "name": "ウィークネスリビーラー",
+    "rank": "B",
+    "attributes": ["魔法のアイテム", "刃属性"],
+    "usage": "1H",
+    "reqStr": 5,
+    "acc": "―",
+    "power": 5,
+    "crit": 10,
+    "extraDmg": "―",
+    "price": 7660,
+    "book": "基本ルールブック Ⅲ",
+    "page": 220
+  },
+  {
+    "id": "w197",
+    "type": "武器",
+    "category": "ソード",
+    "name": "マンゴーシュ",
+    "rank": "A",
+    "attributes": ["刃属性"],
+    "usage": "1H",
+    "reqStr": 6,
+    "acc": "―",
+    "power": 6,
+    "crit": 10,
+    "extraDmg": "―",
+    "price": 620,
+    "book": "基本ルールブック Ⅲ",
+    "page": 220
+  },
+  {
+    "id": "w198",
+    "type": "武器",
+    "category": "ソード",
+    "name": "首切り刀",
+    "rank": "S",
+    "attributes": ["魔法のアイテム", "刃属性"],
+    "usages": [
+      {
+        "usage": "1H両",
+        "reqStr": 20,
+        "acc": "+1",
+        "power": 30,
+        "crit": 10,
+        "extraDmg": "+1"
+      },
+      {
+        "usage": "2H",
+        "reqStr": 20,
+        "acc": "+1",
+        "power": 40,
+        "crit": 10,
+        "extraDmg": "+1"
+      }
+    ],
+    "price": 30000,
+    "book": "基本ルールブック Ⅲ",
+    "page": 220
+  },
+  {
+    "id": "w199",
+    "type": "武器",
+    "category": "ソード",
+    "name": "エンジェルフェザー",
+    "rank": "SS",
+    "attributes": ["魔法のアイテム", "刃属性"],
+    "usage": "1H",
+    "reqStr": 2,
+    "acc": "+2",
+    "power": 17,
+    "crit": 10,
+    "extraDmg": "+1",
+    "price": 40000,
+    "book": "基本ルールブック Ⅲ",
+    "page": 220
+  },
+  {
+    "id": "w200",
+    "type": "武器",
+    "category": "ソード",
+    "name": "ムーンピラー",
+    "rank": "SS",
+    "attributes": ["魔法のアイテム", "刃属性"],
+    "usage": "1H",
+    "reqStr": 10,
+    "acc": "+1",
+    "power": 30,
+    "crit": 10,
+    "extraDmg": "+1",
+    "price": 48000,
+    "book": "基本ルールブック Ⅲ",
+    "page": 220
+  },
+  {
+    "id": "w201",
+    "type": "武器",
+    "category": "ソード",
+    "name": "ハイペリオン",
+    "rank": "SS",
+    "attributes": ["魔法のアイテム", "刃属性"],
+    "usages": [
+      {
+        "usage": "1H両",
+        "reqStr": 20,
+        "acc": "+1",
+        "power": 40,
+        "crit": 10,
+        "extraDmg": "+1"
+      },
+      {
+        "usage": "2H",
+        "reqStr": 20,
+        "acc": "+1",
+        "power": 50,
+        "crit": 10,
+        "extraDmg": "+3"
+      }
+    ],
+    "price": 57000,
+    "book": "基本ルールブック Ⅲ",
+    "page": 220
+  },
+  {
+    "id": "w202",
+    "type": "武器",
+    "category": "ソード",
+    "name": "ガイスター",
+    "rank": "SS",
+    "attributes": ["魔法のアイテム", "刃属性"],
+    "usage": "2H",
+    "reqStr": 30,
+    "acc": "+1",
+    "power": 70,
+    "crit": 10,
+    "extraDmg": "+3",
+    "price": 83000,
+    "book": "基本ルールブック Ⅲ",
+    "page": 220
+  },
+  {
+    "id": "w203",
+    "type": "武器",
+    "category": "アックス",
+    "name": "アームフッカー",
+    "rank": "A",
+    "attributes": ["刃属性"],
+    "usage": "2H",
+    "reqStr": 17,
+    "acc": "―",
+    "power": 37,
+    "crit": 11,
+    "extraDmg": "―",
+    "price": 2480,
+    "book": "基本ルールブック Ⅲ",
+    "page": 220
+  },
+  {
+    "id": "w204",
+    "type": "武器",
+    "category": "アックス",
+    "name": "デスサイズ",
+    "rank": "S",
+    "attributes": ["魔法のアイテム", "刃属性"],
+    "usages": [
+      {
+        "usage": "2H",
+        "reqStr": 17,
+        "acc": "+1",
+        "power": 42,
+        "crit": 11,
+        "extraDmg": "+1"
+      },
+      {
+        "usage": "2H",
+        "reqStr": 17,
+        "acc": "+1",
+        "power": 52,
+        "crit": 11,
+        "extraDmg": "+1"
+      }
+    ],
+    "price": 26000,
+    "book": "基本ルールブック Ⅲ",
+    "page": 220
+  },
+  {
+    "id": "w205",
+    "type": "武器",
+    "category": "アックス",
+    "name": "クマホーク",
+    "rank": "SS",
+    "attributes": ["魔法のアイテム", "刃属性"],
+    "usage": "1H投",
+    "reqStr": 8,
+    "acc": "+1",
+    "power": 28,
+    "crit": 11,
+    "extraDmg": "+1",
+    "price": 50000,
+    "book": "基本ルールブック Ⅲ",
+    "page": 220
+  },
+  {
+    "id": "w206",
+    "type": "武器",
+    "category": "アックス",
+    "name": "ウルゴーシュ",
+    "rank": "SS",
+    "attributes": ["魔法のアイテム", "刃属性", "銀製"],
+    "usages": [
+      {
+        "usage": "振2H",
+        "reqStr": 20,
+        "acc": "-1",
+        "power": 55,
+        "crit": 11,
+        "extraDmg": "―"
+      },
+      {
+        "usage": "突2H",
+        "reqStr": 20,
+        "acc": "-1",
+        "power": 50,
+        "crit": 10,
+        "extraDmg": "―"
+      }
+    ],
+    "price": 64000,
+    "book": "基本ルールブック Ⅲ",
+    "page": 220
+  },
+  {
+    "id": "w207",
+    "type": "武器",
+    "category": "アックス",
+    "name": "アガハスト",
+    "rank": "SS",
+    "attributes": ["魔法のアイテム", "刃属性"],
+    "usages": [
+      {
+        "usage": "振2H",
+        "reqStr": 27,
+        "acc": "+1",
+        "power": 62,
+        "crit": 11,
+        "extraDmg": "+3"
+      },
+      {
+        "usage": "突2H",
+        "reqStr": 27,
+        "acc": "+1",
+        "power": 57,
+        "crit": 10,
+        "extraDmg": "+3"
+      }
+    ],
+    "price": 65000,
+    "book": "基本ルールブック Ⅲ",
+    "page": 220
+  },
+  {
+    "id": "w208",
+    "type": "武器",
+    "category": "アックス",
+    "name": "ダイナスト",
+    "rank": "SS",
+    "attributes": ["魔法のアイテム", "刃属性"],
+    "usage": "2H",
+    "reqStr": 40,
+    "acc": "-1",
+    "power": 90,
+    "crit": 11,
+    "extraDmg": "+3",
+    "price": 83000,
+    "book": "基本ルールブック Ⅲ",
+    "page": 220
+  },
+  {
+    "id": "w209",
+    "type": "武器",
+    "category": "スピア",
+    "name": "ノーマルランス",
+    "rank": "A",
+    "attributes": ["刃属性"],
+    "usages": [
+      {
+        "usage": "1H",
+        "reqStr": 20,
+        "acc": "-1",
+        "power": 25,
+        "crit": 10,
+        "extraDmg": "―"
+      },
+      {
+        "usage": "1H騎",
+        "reqStr": 20,
+        "acc": "-1",
+        "power": 35,
+        "crit": 10,
+        "extraDmg": "―"
+      }
+    ],
+    "price": 1200,
+    "book": "基本ルールブック Ⅲ",
+    "page": 220
+  },
+  {
+    "id": "w210",
+    "type": "武器",
+    "category": "スピア",
+    "name": "ヘビーランス",
+    "rank": "S",
+    "attributes": ["刃属性"],
+    "usages": [
+      {
+        "usage": "1H",
+        "reqStr": 25,
+        "acc": "-1",
+        "power": 35,
+        "crit": 10,
+        "extraDmg": "―"
+      },
+      {
+        "usage": "1H騎",
+        "reqStr": 25,
+        "acc": "-1",
+        "power": 45,
+        "crit": 10,
+        "extraDmg": "―"
+      }
+    ],
+    "price": 8280,
+    "book": "基本ルールブック Ⅲ",
+    "page": 220
   }
 ]
