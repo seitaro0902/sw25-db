@@ -391,7 +391,7 @@
         let headers = ["用法", "必筋", "命中", "威力", "C値", "追加D"];
         let keys = ["usage", "reqStr", "acc", "power", "crit", "extraDmg"];
 
-        if (category === '投擲') {
+        if (['投擲', 'ボウ', 'クロスボウ'].includes(category)) {
           cols = "grid-cols-7";
           headers = ["用法", "必筋", "命中", "威力", "C値", "追加D", "射程"];
           keys = ["usage", "reqStr", "acc", "power", "crit", "extraDmg", "range"];
@@ -408,7 +408,7 @@
           <div class="space-y-1">
             ${usageList.map(u => `
               <div class="grid ${cols} gap-1 font-medium text-slate-800 text-xs items-center">
-                ${keys.map(k => `<div>${u[k] ?? '-'}</div>`).join('')}
+                ${keys.map(k => `<div>${u[k] ?? item[k] ?? '-'}</div>`).join('')}
               </div>
             `).join('')}
           </div>
